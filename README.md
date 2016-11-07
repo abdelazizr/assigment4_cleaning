@@ -1,3 +1,4 @@
+
 #This script is for the coursera Week 4 assignment.
 
 ## First Step: Load the necessary libraries
@@ -23,3 +24,4 @@
 
 #Step 5:From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 # Here the code just picks the necessary fields and write the output to a .txt file
+

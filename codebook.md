@@ -1,5 +1,7 @@
 # Codeboo for the Tidy Dataset
 
+# Minor change
+
 # Data Source
 
 This dataset comes from the "Human Activity Recognition Using Smartphones Data Set" available on this link : 

@@ -1,7 +1,5 @@
 #This script is for the coursera Week 4 assignment.
 
-## First Step: Load the necessary libraries
-
 library(reshape2)
 
 ## We can add the activity labels, using the labels provided
@@ -19,8 +17,6 @@ important_feat.names = gsub('-mean', 'Mean', important_feat.names)
 important_feat.names = gsub('-std', 'Std', important_feat.names)
 important_feat.names <- gsub('[-()]', '', important_feat.names)
 
-
-# Step 1: Merges the training and the test sets to create one data set.
 
 #####Let's read the data
 subject_train <- read.table("./Coursera/data/samsung/UCI HAR Dataset/train/subject_train.txt")

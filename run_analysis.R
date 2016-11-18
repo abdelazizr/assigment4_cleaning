@@ -4,54 +4,49 @@
 
 library(reshape2)
 
+## We can add the activity labels, using the labels provided
+activity_labels <- read.table("./Coursera/data/samsung/UCI HAR Dataset/activity_labels.txt")
+activity_labels[,2] <- as.character(activity_labels[,2])
+
+#Read in the features
+features <- read.table("./Coursera/data/samsung/UCI HAR Dataset/features.txt")
+features[,2] <- as.character(features[,2])
+
+# Now we can extract the data for the mean and standard deviation
+important_feat <- grep(".*mean.*|.*std.*", features[,2])
+important_feat.names <- features[important_feat,2]
+important_feat.names = gsub('-mean', 'Mean', important_feat.names)
+important_feat.names = gsub('-std', 'Std', important_feat.names)
+important_feat.names <- gsub('[-()]', '', important_feat.names)
+
+
 # Step 1: Merges the training and the test sets to create one data set.
 
 #####Let's read the data
-subject_train <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/train/subject_train.txt")
-subject_test <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/test/subject_test.txt")
+subject_train <- read.table("./Coursera/data/samsung/UCI HAR Dataset/train/subject_train.txt")
+subject_test <- read.table("./Coursera/data/samsung/UCI HAR Dataset/test/subject_test.txt")
 
-X_train <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/train/X_train.txt")
-X_test <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/test/X_test.txt")
+X_train <- read.table("./Coursera/data/samsung/UCI HAR Dataset/train/X_train.txt")[important_feat]
+X_test <- read.table("./Coursera/data/samsung/UCI HAR Dataset/test/X_test.txt")[important_feat]
 
-y_train <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/train/y_train.txt")
-y_test <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/test/y_test.txt")
+y_train <- read.table("./Coursera/data/samsung/UCI HAR Dataset/train/y_train.txt")
+y_test <- read.table("./Coursera/data/samsung/UCI HAR Dataset/test/y_test.txt")
 
-#adding columns title to subject files
-names(subject_train) <- "sbj_id"
-names(subject_test) <- "sbj_id"
+### We can bin the train dataset and test dataset to form on set
+train <- cbind(subject_train,y_train,X_train )
 
-# adding column title to measurements files
-features <- read.table("C:/Users/asereme/Desktop/Coursera/data/samsung/UCI HAR Dataset/features.txt")
-names(X_train) <- features$V2
-names(X_test) <- features$V2
+test <- cbind(subject_test, y_test,X_test)
 
-#add title to label files
-names(y_train) <- "activity"
-names(y_test) <- "activity"
+## Merge test and train
+combined_data <-rbind(train, test)
+colnames(combined_data) <- c("subject", "activity", important_feat.names)
 
-#combine them
-train <- cbind(subject_train,y_train,X_train)
-test <- cbind(subject_test,y_test,X_test)
-final <- rbind(train, test)
+## modify acticities and subjects to factors for dataset
+combined_data$activity <- factor(combined_data$activity, levels = activity_labels[,1], labels = activity_labels[,2])
+combined_data$subject <- as.factor(combined_data$subject)
+combined_data.melted <- melt(combined_data, id = c("subject", "activity"))
+combined_data.mean <- dcast(combined_data.melted, subject + activity ~ variable, mean)
 
+#################################t############################
 
-
-# Step 2: Extracts only the measurements on the mean and standard deviation for each measurement.
-mean_std_columns <- grepl("mean\\(\\)", names(combined)) |
-  grepl("std\\(\\)", names(combined))
-
-#only keep the columns ewe want
-final <- final[, mean_std_columns]
-#Step3 :Uses descriptive activity names to name the activities in the data set
-#add title to label files
-names(y_train) <- "activity"
-names(y_test) <- "activity"
-
-#Step 4: Appropriately labels the data set with descriptive variable names.
-final$activity <- factor(final$activity, labels = c("walking","walking up","walking down","sitting","stading","running"))
-
-#Step 5:From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
-tmp <- melt(final, id=c("sbj_id","activity"))
-clean_n_tidy <- dcast(tmp, sbj_id+activity ~ variable, mean)
-
-write.csv(clean_n_tidy, "cleclean_n_tidy.txt", row.names = FALSE)
+write.table(combined_data.mean, "clean_n_tidy.txt", row.names = FALSE)

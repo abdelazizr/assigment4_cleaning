@@ -1,9 +1,19 @@
-# Codeboo for the Tidy Dataset
+# Codebook for the Tidy Dataset
+
+# Minor change
 
 # Data Source
 
 This dataset comes from the "Human Activity Recognition Using Smartphones Data Set" available on this link : 
 http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
+
+# Attribute 
+
+For each record:
+
+Triaxial acceleration from the accelerometer (total acceleration) and the estimated body acceleration.
+Triaxial Angular velocity from the gyroscope.
+Its activity label.
 
 # Variables
 
